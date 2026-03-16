@@ -48,30 +48,18 @@ function App() {
     );
   }
 
+  // Public access - always show main app routes
   return (
     <Routes>
-      {/* Auth Routes */}
-      {!isAuthenticated ? (
-        <>
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="*" element={<Navigate to="/auth" replace />} />
-        </>
-      ) : isAuthenticated && !isOnboarded ? (
-        <>
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="*" element={<Navigate to="/onboarding" replace />} />
-        </>
-      ) : (
-        <>
-          {/* Protected Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/profile/:id" element={<ProfilePage />} />
-          <Route path="/provide-service" element={<ProvideServicePage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </>
-      )}
+      {/* Main Application Routes */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/profile/:id" element={<ProfilePage />} />
+      <Route path="/provide-service" element={<ProvideServicePage />} />
+      <Route path="/search" element={<SearchPage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

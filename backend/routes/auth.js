@@ -132,4 +132,103 @@ router.post('/login', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/auth/reset-db (Development Only)
+ * Clear all users from database
+ */
+router.delete('/reset-db', async (req, res) => {
+  try {
+    if (process.env.NODE_ENV !== 'development') {
+      return res.status(403).json({
+        success: false,
+        error: 'This endpoint is only available in development mode'
+      });
+    }
+
+    const result = await User.deleteMany({});
+    
+    res.status(200).json({
+      success: true,
+      message: `Database reset successfully. Deleted ${result.deletedCount} users.`
+    });
+  } catch (error) {
+    console.error('Reset DB error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Database reset failed'
+    });
+  }
+});
+
+/**
+ * GET /api/auth/auto-login
+ * Auto-login with demo user (public access mode)
+ */
+router.get('/auto-login', async (req, res) => {
+  try {
+    // Check if demo user exists
+    let user = await User.findOne({ email: 'demo@skillswap.com' });
+    
+    // Create demo user if doesn't exist
+    if (!user) {
+      user = new User({
+        name: 'Demo User',
+        email: 'demo@skillswap.com',
+        passwordHash: 'demo123456',
+        bio: 'Welcome to SkillSwap! This is a demo account. Explore and connect with skill exchange partners.',
+        location: 'Global',
+        qualification: 'Self-taught',
+        skillsTeach: [
+          {
+            title: 'Web Development',
+            category: 'Technology',
+            proficiency: 'Expert',
+            description: 'Full-stack web development with React and Node.js',
+            rating: 5,
+            ratingCount: 10
+          }
+        ],
+        skillsLearn: [
+          {
+            title: 'Machine Learning',
+            category: 'Technology',
+            urgency: 'Medium'
+          },
+          {
+            title: 'Graphic Design',
+            category: 'Art',
+            urgency: 'Low'
+          }
+        ],
+        isOnboarded: true,
+        trustScore: 85
+      });
+      
+      await user.save();
+      console.log('✅ Demo user created');
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Auto-login successful',
+      token,
+      user: user.getPublicProfile(),
+      isOnboarded: true
+    });
+  } catch (error) {
+    console.error('Auto-login error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Auto-login failed'
+    });
+  }
+});
+
 module.exports = router;

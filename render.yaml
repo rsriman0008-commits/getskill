@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: skillswap-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        fromDatabase:
+          name: skillswap-db
+          property: connectionString
+      - key: JWT_SECRET
+        value: your_super_secret_jwt_key_production_should_change_this_12345678
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        value: https://skillswap-frontend.onrender.com
+      - key: SOCKET_IO_CORS_ORIGIN
+        value: https://skillswap-frontend.onrender.com
+      - key: SOCKET_IO_CORS_CREDENTIALS
+        value: "true"
+
+  - type: web
+    name: skillswap-frontend
+    env: node
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run preview -- --host 0.0.0.0
+    envVars:
+      - key: VITE_API_URL
+        value: https://skillswap-backend.onrender.com/api
+
+databases:
+  - name: skillswap-db
+    plan: free
+    ipAllowList: []
