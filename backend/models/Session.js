@@ -55,15 +55,7 @@ const sessionSchema = new mongoose.Schema({
     maxlength: [500, 'Review must be less than 500 characters']
   },
   acceptedAt: Date,
-  completedAt: Date,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+  completedAt: Date
 }, { timestamps: true });
 
 // Prevent self-exchange
@@ -74,11 +66,7 @@ sessionSchema.pre('save', async function(next) {
   next();
 });
 
-// Update updatedAt on save
-sessionSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
+
 
 // Populate related data
 sessionSchema.pre(/^find/, function(next) {

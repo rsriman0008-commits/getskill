@@ -76,7 +76,7 @@ router.post('/', authMiddleware, async (req, res) => {
     await newSession.populate([
       { path: 'requester', select: 'name email -passwordHash' },
       { path: 'recipient', select: 'name email -passwordHash' },
-      { path: 'course', select: 'courseName category -passwordHash' }
+      { path: 'course', select: 'courseName category' }
     ]);
 
     // Emit socket event for real-time notification (handled by Socket.io in server.js)

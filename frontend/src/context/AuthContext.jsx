@@ -1,5 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
-import api from '../utils/api';
+import { setAuthToken, authAPI } from '../utils/api';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const AuthContext = createContext();
 
@@ -20,11 +23,11 @@ export const AuthProvider = ({ children }) => {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
         setIsOnboarded(storedOnboarded === 'true');
-        api.setAuthToken(storedToken);
+        setAuthToken(storedToken);
       } else {
         // Auto-login with demo user for public access
         try {
-          const response = await api.get('/auth/auto-login');
+          const response = await axios.get(`${API_BASE_URL}/auth/auto-login`);
           if (response.data.success) {
             setToken(response.data.token);
             setUser(response.data.user);
@@ -32,7 +35,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
             localStorage.setItem('isOnboarded', response.data.isOnboarded.toString());
-            api.setAuthToken(response.data.token);
+            setAuthToken(response.data.token);
           }
         } catch (error) {
           console.error('Auto-login failed:', error);
@@ -48,12 +51,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, confirmPassword) => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/register', {
-        name,
-        email,
-        password,
-        confirmPassword
-      });
+      const response = await authAPI.register(name, email, password, confirmPassword);
 
       if (response.data.success) {
         setToken(response.data.token);
@@ -62,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         localStorage.setItem('isOnboarded', 'false');
-        api.setAuthToken(response.data.token);
+        setAuthToken(response.data.token);
         return { success: true };
       }
     } catch (error) {
@@ -78,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const response = await api.post('/auth/login', { email, password });
+      const response = await authAPI.login(email, password);
 
       if (response.data.success) {
         setToken(response.data.token);
@@ -87,7 +85,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         localStorage.setItem('isOnboarded', response.data.isOnboarded.toString());
-        api.setAuthToken(response.data.token);
+        setAuthToken(response.data.token);
         return { success: true, isOnboarded: response.data.isOnboarded };
       }
     } catch (error) {
@@ -107,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('isOnboarded');
-    api.setAuthToken(null);
+    setAuthToken(null);
   };
 
   const updateUser = (updatedUser) => {

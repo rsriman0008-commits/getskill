@@ -5,7 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    open: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
@@ -16,7 +15,6 @@ export default defineConfig({
   },
   build: {
     target: 'es2015',
-    outDir: 'dist',
-    minify: 'terser'
+    outDir: 'dist'
   }
 })

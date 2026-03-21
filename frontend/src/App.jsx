@@ -51,6 +51,8 @@ function App() {
   // Public access - always show main app routes
   return (
     <Routes>
+      {/* Auth Route */}
+      <Route path="/auth" element={<AuthPage />} />
       {/* Main Application Routes */}
       <Route path="/" element={<HomePage />} />
       <Route path="/profile" element={<ProfilePage />} />

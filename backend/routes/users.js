@@ -74,25 +74,33 @@ router.put('/me', authMiddleware, async (req, res) => {
 });
 
 /**
- * GET /api/users/:id
- * Get public profile of any user
+ * GET /api/users/matches
+ * Get top 10 matches for current user
+ * NOTE: This MUST be defined BEFORE /:id to prevent Express from
+ * matching "matches" as an :id parameter.
  */
-router.get('/:id', async (req, res) => {
+router.get('/matches', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
+    const currentUser = await User.findById(req.userId);
+    if (!currentUser) {
       return res.status(404).json({
         success: false,
         error: 'User not found'
       });
     }
 
+    // Get all other users
+    const allUsers = await User.find({ _id: { $ne: req.userId }, isOnboarded: true });
+
+    // Find matches
+    const matches = await findMatches(currentUser, allUsers, 10);
+
     res.status(200).json({
       success: true,
-      user: user.getPublicProfile()
+      matches
     });
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error finding matches:', error);
     res.status(500).json({
       success: false,
       error: error.message
@@ -150,31 +158,25 @@ router.post('/onboarding', authMiddleware, async (req, res) => {
 });
 
 /**
- * GET /api/users/matches
- * Get top 10 matches for current user
+ * GET /api/users/:id
+ * Get public profile of any user
  */
-router.get('/matches', authMiddleware, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const currentUser = await User.findById(req.userId);
-    if (!currentUser) {
+    const user = await User.findById(req.params.id);
+    if (!user) {
       return res.status(404).json({
         success: false,
         error: 'User not found'
       });
     }
 
-    // Get all other users
-    const allUsers = await User.find({ _id: { $ne: req.userId }, isOnboarded: true });
-
-    // Find matches
-    const matches = await findMatches(currentUser, allUsers, 10);
-
     res.status(200).json({
       success: true,
-      matches
+      user: user.getPublicProfile()
     });
   } catch (error) {
-    console.error('Error finding matches:', error);
+    console.error('Error fetching user:', error);
     res.status(500).json({
       success: false,
       error: error.message

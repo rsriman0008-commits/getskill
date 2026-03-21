@@ -83,14 +83,6 @@ const courseSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     min: 0
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
   }
 }, { timestamps: true });
 
@@ -99,11 +91,7 @@ courseSchema.index({ category: 1 });
 courseSchema.index({ teacher: 1 });
 courseSchema.index({ courseName: 'text', overview: 'text' });
 
-// Update updatedAt before save
-courseSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
+
 
 // Populate teacher details by default
 courseSchema.pre(/^find/, function(next) {
