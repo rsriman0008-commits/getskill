@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: skillswap-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://Ronaldo:sriman7@cluster0.n7qsxwg.mongodb.net/skillswap?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        sync: false
+      - key: SOCKET_IO_CORS_ORIGIN
+        sync: false
+      - key: SOCKET_IO_CORS_CREDENTIALS
+        value: "true"
