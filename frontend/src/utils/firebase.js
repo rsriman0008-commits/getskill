@@ -27,7 +27,7 @@ const createMockUserObject = (email, uid, displayName = '') => {
     email: email.toLowerCase(),
     uid,
     displayName: displayName || email.split('@')[0],
-    getIdToken: async () => `mock-firebase-token-${email.toLowerCase()}-${uid}`
+    getIdToken: async () => `mock-firebase-token|${email.toLowerCase()}|${uid}`
   };
 };
 
@@ -64,23 +64,39 @@ const mockSignInWithEmailAndPassword = async (auth, email, password) => {
     throw new Error('FirebaseError: Missing email or password.');
   }
 
+  const emailLower = email.toLowerCase();
+
   // Pre-seed some default accounts in mock mode for standard testers
-  const users = getMockUsers();
-  if (email.toLowerCase() === 'demo@skillswap.com') {
-    const uid = 'uid-demo';
-    const user = createMockUserObject(email, uid, 'Demo User');
-    mockAuth.currentUser = user;
-    return { user };
+  const mockPreseededUsers = {
+    'demo@skillswap.com': { password: 'demo123456', uid: 'uid-demo', name: 'Demo User' },
+    'sarah@skillswap.com': { password: 'sarah123456', uid: 'uid-sarah', name: 'Sarah Chen' },
+    'jeanluc@skillswap.com': { password: 'jeanluc123456', uid: 'uid-jeanluc', name: 'Jean-Luc Dupont' },
+    'elena@skillswap.com': { password: 'elena123456', uid: 'uid-elena', name: 'Elena Rostova' },
+    'marcus@skillswap.com': { password: 'marcus123456', uid: 'uid-marcus', name: 'Marcus Aurelius' }
+  };
+
+  if (mockPreseededUsers[emailLower]) {
+    const preseeded = mockPreseededUsers[emailLower];
+    if (preseeded.password === password) {
+      const user = createMockUserObject(emailLower, preseeded.uid, preseeded.name);
+      mockAuth.currentUser = user;
+      return { user };
+    } else {
+      const err = new Error('Firebase: Error (auth/wrong-password).');
+      err.code = 'auth/wrong-password';
+      throw err;
+    }
   }
 
-  const registeredUser = users[email.toLowerCase()];
+  const users = getMockUsers();
+  const registeredUser = users[emailLower];
   if (!registeredUser || registeredUser.password !== password) {
     const err = new Error('Firebase: Error (auth/wrong-password).');
     err.code = 'auth/wrong-password';
     throw err;
   }
 
-  const user = createMockUserObject(email, registeredUser.uid);
+  const user = createMockUserObject(emailLower, registeredUser.uid);
   mockAuth.currentUser = user;
   return { user };
 };

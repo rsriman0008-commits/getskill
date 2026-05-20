@@ -180,11 +180,23 @@ router.post('/firebase-login', async (req, res) => {
     let firebaseUid = 'mock-uid';
 
     // 1. Decode Firebase ID Token
-    if (idToken.startsWith('mock-firebase-token-')) {
+    if (idToken.startsWith('mock-firebase-token-') || idToken.startsWith('mock-firebase-token|')) {
       // Simulation mode: Extract properties from token signature
-      const parts = idToken.split('-');
-      verifiedEmail = parts[3]; // mock-firebase-token-email-uid
-      firebaseUid = parts[4] || 'mock-uid';
+      if (idToken.includes('|')) {
+        const parts = idToken.split('|');
+        verifiedEmail = parts[1];
+        firebaseUid = parts[2] || 'mock-uid';
+      } else {
+        const parts = idToken.split('-');
+        const emailIndex = parts.findIndex(p => p.includes('@'));
+        if (emailIndex !== -1) {
+          verifiedEmail = parts[emailIndex];
+          firebaseUid = parts.slice(emailIndex + 1).join('-') || 'mock-uid';
+        } else {
+          verifiedEmail = parts[3];
+          firebaseUid = parts[4] || 'mock-uid';
+        }
+      }
     } else {
       // Live Firebase mode: Safely parse standard decoded token
       try {
