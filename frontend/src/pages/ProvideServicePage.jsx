@@ -37,7 +37,7 @@ const ProvideServicePage = () => {
     if (!learningInput.trim()) return;
     setFormData(prev => ({
       ...prev,
-      whatYouLearn: [...prev.whatYouLearn, learningInput]
+      whatYouLearn: [...prev.whatYouLearn, learningInput.trim()]
     }));
     setLearningInput('');
   };
@@ -53,7 +53,7 @@ const ProvideServicePage = () => {
     if (!featureInput.trim() || formData.keyFeatures.length >= 5) return;
     setFormData(prev => ({
       ...prev,
-      keyFeatures: [...prev.keyFeatures, featureInput]
+      keyFeatures: [...prev.keyFeatures, featureInput.trim()]
     }));
     setFeatureInput('');
   };
@@ -119,40 +119,50 @@ const ProvideServicePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+      {/* Background ambient glows */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-cyan-600/5 rounded-full blur-3xl"></div>
+      </div>
+
       <Navbar />
 
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+      <div className="max-w-3xl mx-auto px-4 py-12 relative z-10 animate-fade-in">
+        <div className="glass-card p-8 md:p-10 border-white/5 glow-purple">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Register Your Course</h1>
-            <p className="text-slate-600">Share your expertise and help others learn</p>
+          <div className="mb-10 text-center md:text-left border-b border-white/5 pb-6">
+            <h1 className="text-3xl font-black">
+              Register Your <span className="gradient-text">Teaching Course</span>
+            </h1>
+            <p className="text-slate-400 mt-2 text-sm">
+              Teach others your core strengths in exchange for other skills. Set up your course syllabus below.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Course Name */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Course Name *</label>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Course Title *</label>
               <input
                 type="text"
                 name="courseName"
                 value={formData.courseName}
                 onChange={handleChange}
-                placeholder="e.g., Learn Python Basics"
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="e.g., Figma UI/UX Workshop"
+                className="input-dark"
               />
             </div>
 
             {/* Category & Level */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">Category *</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Category *</label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
                 >
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -161,61 +171,61 @@ const ProvideServicePage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">Target Level *</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Target Proficiency *</label>
                 <select
                   name="targetLevel"
                   value={formData.targetLevel}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
                 >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="Beginner">📈 Beginner Friendly</option>
+                  <option value="Intermediate">📈 Intermediate Level</option>
+                  <option value="Advanced">📈 Advanced Level</option>
                 </select>
               </div>
             </div>
 
             {/* Qualification */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Your Qualification for This Skill *</label>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Your Credentials / Qualification *</label>
               <textarea
                 name="qualification"
                 value={formData.qualification}
                 onChange={handleChange}
-                placeholder="Describe your experience, certifications, achievements..."
+                placeholder="Describe your background or practical projects you completed in this field..."
                 rows="3"
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none text-sm leading-relaxed"
               />
             </div>
 
             {/* What Students Learn */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">What Students Will Learn *</label>
-              <div className="flex gap-2 mb-3">
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Learning Outcomes * (At least one)</label>
+              <div className="flex gap-2 mb-4">
                 <input
                   type="text"
                   value={learningInput}
                   onChange={(e) => setLearningInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddLearning()}
-                  placeholder="Add learning outcome..."
-                  className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddLearning(); } }}
+                  placeholder="e.g., Master layout design grids"
+                  className="flex-1 px-4 py-2.5 bg-slate-900 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
                 />
                 <button
                   type="button"
                   onClick={handleAddLearning}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                  className="px-5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white rounded-xl font-bold text-sm transition-all"
                 >
                   Add
                 </button>
               </div>
               <div className="space-y-2">
                 {formData.whatYouLearn.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center bg-indigo-50 p-3 rounded-lg">
-                    <p className="text-slate-900">{item}</p>
+                  <div key={idx} className="flex justify-between items-center bg-white/5 border border-white/5 p-3 rounded-xl">
+                    <p className="text-slate-200 text-xs font-medium">{item}</p>
                     <button
                       type="button"
                       onClick={() => handleRemoveLearning(idx)}
-                      className="text-red-600 hover:text-red-700 font-bold"
+                      className="text-red-400 hover:text-red-300 font-bold px-2 py-1 text-sm transition-colors"
                     >
                       ✕
                     </button>
@@ -226,34 +236,34 @@ const ProvideServicePage = () => {
 
             {/* Key Features */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Key Features (max 5)</label>
-              <div className="flex gap-2 mb-3">
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Key Course Highlights (Max 5)</label>
+              <div className="flex gap-2 mb-4">
                 <input
                   type="text"
                   value={featureInput}
                   onChange={(e) => setFeatureInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddFeature()}
-                  placeholder="e.g., Interactive exercises, Live sessions..."
-                  className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddFeature(); } }}
+                  placeholder="e.g., Weekly live code reviews"
+                  className="flex-1 px-4 py-2.5 bg-slate-900 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
                   disabled={formData.keyFeatures.length >= 5}
                 />
                 <button
                   type="button"
                   onClick={handleAddFeature}
                   disabled={formData.keyFeatures.length >= 5}
-                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                  className="px-5 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-all"
                 >
                   Add
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.keyFeatures.map((feature, idx) => (
-                  <div key={idx} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full flex items-center gap-2">
+                  <div key={idx} className="bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2">
                     <span>{feature}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveFeature(idx)}
-                      className="font-bold hover:text-blue-900"
+                      className="font-bold hover:text-white transition-colors ml-1"
                     >
                       ✕
                     </button>
@@ -264,92 +274,98 @@ const ProvideServicePage = () => {
 
             {/* Overview */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Course Overview / Description *</label>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Detailed Course Description *</label>
               <textarea
                 name="overview"
                 value={formData.overview}
                 onChange={handleChange}
-                placeholder="Provide a detailed description of your course..."
+                placeholder="Give a beautiful summary of what the course covers and what is expected of the exchange student..."
                 rows="4"
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none text-sm leading-relaxed"
               />
             </div>
 
             {/* Time Preference */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Time Preference *</label>
-              <div className="flex flex-wrap gap-3">
-                {timeOptions.map(time => (
-                  <label key={time} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.timePreference.includes(time)}
-                      onChange={() => handleTimePreference(time)}
-                      className="w-4 h-4 accent-indigo-600"
-                    />
-                    <span className="text-slate-700">{time}</span>
-                  </label>
-                ))}
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">Preferred Tutoring Times *</label>
+              <div className="flex flex-wrap gap-2">
+                {timeOptions.map(time => {
+                  const isSelected = formData.timePreference.includes(time);
+                  return (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => handleTimePreference(time)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all duration-200 ${
+                        isSelected 
+                          ? 'bg-purple-600/20 border-purple-500/50 text-purple-300' 
+                          : 'bg-white/5 border-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Mode */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">Mode *</label>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Teaching Format Mode *</label>
               <select
                 name="mode"
                 value={formData.mode}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
               >
-                <option value="Online">Online</option>
-                <option value="In-person">In-person</option>
-                <option value="Both">Both</option>
+                <option value="Online">🌐 Online Tutoring Mode</option>
+                <option value="In-person">🏠 In-person Meetups</option>
+                <option value="Both">✨ Mixed / Both Formats</option>
               </select>
             </div>
 
             {/* Exchange Wanted */}
             <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">What Do You Want in Exchange? (Optional)</label>
+              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">What skill swap are you seeking? (Optional)</label>
               <input
                 type="text"
                 name="exchangeWanted"
                 value={formData.exchangeWanted}
                 onChange={handleChange}
-                placeholder="Leave blank if open to any exchange. e.g., 'Looking for Python tutoring'"
-                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="e.g., Looking for someone to teach me French"
+                className="input-dark"
               />
             </div>
 
-            {/* Submit Buttons */}
-            <div className="flex gap-4 pt-4">
+            {/* Submit / Cancel Actions */}
+            <div className="flex gap-4 pt-6 border-t border-white/5">
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-900 py-3 rounded-lg font-semibold transition-colors"
+                className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-xl font-bold text-sm transition-all"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white py-3 rounded-lg font-semibold transition-colors"
+                className="flex-1 btn-primary py-3.5 text-sm font-bold relative overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {loading ? 'Registering...' : 'Register Course'}
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Registering...</span>
+                  </div>
+                ) : (
+                  'Launch Course 🚀'
+                )}
               </button>
             </div>
           </form>
         </div>
       </div>
 
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };

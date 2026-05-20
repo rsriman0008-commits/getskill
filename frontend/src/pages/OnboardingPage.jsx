@@ -29,7 +29,7 @@ const OnboardingPage = () => {
     if (!skillInput.trim()) return;
 
     const newSkill = {
-      title: skillInput,
+      title: skillInput.trim(),
       category: skillCategory,
       proficiency: skillProficiency
     };
@@ -47,7 +47,7 @@ const OnboardingPage = () => {
     if (!skillInput.trim()) return;
 
     const newSkill = {
-      title: skillInput,
+      title: skillInput.trim(),
       category: skillCategory,
       urgency: skillUrgency
     };
@@ -109,7 +109,7 @@ const OnboardingPage = () => {
       if (response.data.success) {
         updateUser(response.data.user);
         completeOnboarding();
-        setToast({ type: 'success', message: 'Onboarding completed! Redirecting to home...' });
+        setToast({ type: 'success', message: 'Onboarding completed! Redirecting home...' });
         setTimeout(() => navigate('/'), 1500);
       }
     } catch (error) {
@@ -120,48 +120,65 @@ const OnboardingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 p-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden flex items-center justify-center p-4">
+      {/* Background ambient glows */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl animate-float-delayed"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-xl animate-fade-in py-8">
         {/* Step Indicator */}
-        <div className="mb-8">
+        <div className="mb-10">
           <div className="flex items-center justify-between mb-4">
-            {[1, 2, 3].map(step => (
-              <div key={step} className="flex-1">
-                <div
-                  className={`h-2 rounded-full transition-colors ${
-                    step <= currentStep ? 'bg-indigo-600' : 'bg-slate-300'
-                  }`}
-                />
-                <p className="text-xs font-semibold text-center mt-2 text-slate-600">
-                  {step === 1 ? 'Personal Info' : step === 2 ? 'Skills to Teach' : 'Skills to Learn'}
-                </p>
-              </div>
-            ))}
+            {[1, 2, 3].map(step => {
+              const isActive = step === currentStep;
+              const isCompleted = step < currentStep;
+              return (
+                <div key={step} className="flex-1 relative px-2">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      isActive 
+                        ? 'bg-gradient-to-r from-purple-500 to-cyan-500 shadow-md shadow-purple-500/25' 
+                        : isCompleted 
+                        ? 'bg-purple-600' 
+                        : 'bg-white/10'
+                    }`}
+                  />
+                  <p className={`text-[10px] font-bold text-center mt-3 uppercase tracking-wider ${
+                    isActive ? 'text-purple-300' : 'text-slate-500'
+                  }`}>
+                    {step === 1 ? 'Personal Info' : step === 2 ? 'Skills to Teach' : 'Skills to Learn'}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Step 1: Personal Info */}
         {currentStep === 1 && (
-          <div className="bg-white rounded-2xl shadow-lg p-8 animate-slide-in">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Tell us about yourself</h2>
+          <div className="glass-card p-8 border-white/5 glow-purple animate-scale-in">
+            <h2 className="text-2xl font-black mb-1">Tell us about <span className="gradient-text">yourself</span></h2>
+            <p className="text-xs text-slate-400 mb-6">Let's complete your profile so you can get matched correctly.</p>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">Full Name</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Full Name</label>
                 <input
                   type="text"
                   value={user?.name || ''}
                   disabled
-                  className="w-full px-4 py-3 rounded-lg bg-slate-100 border border-slate-300 text-slate-500"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-500 cursor-not-allowed text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">Qualification</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Qualification</label>
                 <select
                   value={formData.qualification}
                   onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
                 >
                   <option value="B.Tech">B.Tech</option>
                   <option value="MBA">MBA</option>
@@ -173,24 +190,24 @@ const OnboardingPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">Location (City)</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Location (City)</label>
                 <input
                   type="text"
-                  placeholder="e.g., San Francisco, CA"
+                  placeholder="e.g., London, UK"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="input-dark"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-900 mb-2">Short Bio</label>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Bio / Intro</label>
                 <textarea
-                  placeholder="Tell others about yourself, your interests..."
+                  placeholder="Tell others what you do, what you are passionate about, and your exchange goals..."
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   rows="4"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none text-sm leading-relaxed"
                 />
               </div>
             </div>
@@ -199,62 +216,73 @@ const OnboardingPage = () => {
 
         {/* Step 2: Skills to Teach */}
         {currentStep === 2 && (
-          <div className="bg-white rounded-2xl shadow-lg p-8 animate-slide-in">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">What skills can you teach?</h2>
+          <div className="glass-card p-8 border-white/5 glow-purple animate-scale-in">
+            <h2 className="text-2xl font-black mb-1">What skills can you <span className="gradient-text">teach?</span></h2>
+            <p className="text-xs text-slate-400 mb-6">List matching talents you can share with the community.</p>
 
             <div className="space-y-4 mb-6">
-              <div className="flex gap-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Skill Title</label>
                 <input
                   type="text"
                   placeholder="Skill name (e.g., Python, Guitar, Spanish)"
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddSkillTeach()}
-                  className="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkillTeach(); } }}
+                  className="input-dark"
                 />
               </div>
 
-              <div className="flex gap-2">
-                <select
-                  value={skillCategory}
-                  onChange={(e) => setSkillCategory(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Category</label>
+                  <select
+                    value={skillCategory}
+                    onChange={(e) => setSkillCategory(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
+                  >
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <select
-                  value={skillProficiency}
-                  onChange={(e) => setSkillProficiency(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Expert">Expert</option>
-                </select>
-
-                <button
-                  onClick={handleAddSkillTeach}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  Add
-                </button>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Proficiency Level</label>
+                  <select
+                    value={skillProficiency}
+                    onChange={(e) => setSkillProficiency(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
+                  >
+                    <option value="Beginner">📈 Beginner</option>
+                    <option value="Intermediate">📈 Intermediate</option>
+                    <option value="Expert">📈 Expert</option>
+                  </select>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={handleAddSkillTeach}
+                className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl border border-white/10 transition-all text-sm"
+              >
+                + Add Teaching Skill
+              </button>
             </div>
 
             {/* Display Added Skills */}
-            <div className="space-y-2">
+            <div className="space-y-3.5">
               {formData.skillsTeach.map((skill, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-slate-100 p-3 rounded-lg">
+                <div key={idx} className="flex items-center justify-between bg-white/5 border border-white/5 p-4 rounded-xl">
                   <div>
-                    <p className="font-semibold text-slate-900">{skill.title}</p>
-                    <p className="text-xs text-slate-600">{skill.category} • {skill.proficiency}</p>
+                    <p className="font-extrabold text-white text-sm">{skill.title}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Category: <span className="text-purple-300">{skill.category}</span> • Level: <span className="text-cyan-300">{skill.proficiency}</span>
+                    </p>
                   </div>
                   <button
                     onClick={() => handleRemoveSkillTeach(idx)}
-                    className="text-red-600 hover:text-red-700 font-bold"
+                    className="text-red-400 hover:text-red-300 font-bold px-2 py-1 text-xs"
                   >
                     ✕
                   </button>
@@ -266,62 +294,73 @@ const OnboardingPage = () => {
 
         {/* Step 3: Skills to Learn */}
         {currentStep === 3 && (
-          <div className="bg-white rounded-2xl shadow-lg p-8 animate-slide-in">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">What do you want to learn?</h2>
+          <div className="glass-card p-8 border-white/5 glow-purple animate-scale-in">
+            <h2 className="text-2xl font-black mb-1">What do you want to <span className="gradient-text">learn?</span></h2>
+            <p className="text-xs text-slate-400 mb-6">List subjects and fields you hope to receive coaching in.</p>
 
             <div className="space-y-4 mb-6">
-              <div className="flex gap-2">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Skill Name</label>
                 <input
                   type="text"
-                  placeholder="Skill name (e.g., JavaScript, Photography, French)"
+                  placeholder="Skill name (e.g., JavaScript, French, Photography)"
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddSkillLearn()}
-                  className="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddSkillLearn(); } }}
+                  className="input-dark"
                 />
               </div>
 
-              <div className="flex gap-2">
-                <select
-                  value={skillCategory}
-                  onChange={(e) => setSkillCategory(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Category</label>
+                  <select
+                    value={skillCategory}
+                    onChange={(e) => setSkillCategory(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
+                  >
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <select
-                  value={skillUrgency}
-                  onChange={(e) => setSkillUrgency(e.target.value)}
-                  className="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="Low">Low</option>
-                  <option value="Medium">Medium</option>
-                  <option value="High">High</option>
-                </select>
-
-                <button
-                  onClick={handleAddSkillLearn}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  Add
-                </button>
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Learning Urgency</label>
+                  <select
+                    value={skillUrgency}
+                    onChange={(e) => setSkillUrgency(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900 border border-white/10 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm cursor-pointer"
+                  >
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium">Medium Priority</option>
+                    <option value="High">High Priority</option>
+                  </select>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={handleAddSkillLearn}
+                className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl border border-white/10 transition-all text-sm"
+              >
+                + Add Learning Goal
+              </button>
             </div>
 
             {/* Display Added Skills */}
-            <div className="space-y-2">
+            <div className="space-y-3.5">
               {formData.skillsLearn.map((skill, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-slate-100 p-3 rounded-lg">
+                <div key={idx} className="flex items-center justify-between bg-white/5 border border-white/5 p-4 rounded-xl">
                   <div>
-                    <p className="font-semibold text-slate-900">{skill.title}</p>
-                    <p className="text-xs text-slate-600">{skill.category} • Urgency: {skill.urgency}</p>
+                    <p className="font-extrabold text-white text-sm">{skill.title}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Category: <span className="text-purple-300">{skill.category}</span> • Urgency: <span className="text-pink-300">{skill.urgency}</span>
+                    </p>
                   </div>
                   <button
                     onClick={() => handleRemoveSkillLearn(idx)}
-                    className="text-red-600 hover:text-red-700 font-bold"
+                    className="text-red-400 hover:text-red-300 font-bold px-2 py-1 text-xs"
                   >
                     ✕
                   </button>
@@ -332,11 +371,11 @@ const OnboardingPage = () => {
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex gap-4 mt-8">
+        <div className="flex gap-4 mt-6">
           {currentStep > 1 && (
             <button
               onClick={handleBack}
-              className="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-900 font-bold py-3 rounded-lg transition-colors"
+              className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-3.5 rounded-xl text-sm transition-all"
             >
               Back
             </button>
@@ -345,30 +384,30 @@ const OnboardingPage = () => {
           {currentStep < 3 ? (
             <button
               onClick={handleNext}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors"
+              className="flex-1 btn-primary py-3.5 text-sm"
             >
-              Next
+              Next Step →
             </button>
           ) : (
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-bold py-3 rounded-lg transition-colors"
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 rounded-xl text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-md shadow-emerald-900/20"
             >
-              {loading ? 'Completing...' : 'Complete Onboarding'}
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Saving Profile...</span>
+                </div>
+              ) : (
+                'Complete Setup 🚀'
+              )}
             </button>
           )}
         </div>
       </div>
 
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };

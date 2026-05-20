@@ -4,82 +4,219 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GetSkills - Local Skill Exchange Platform</title>
+    <meta name="description" content="Exchange skills locally, learn together. Connect with people who teach what you want to learn.">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Icons (Feather Icons via CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            },
+            colors: {
+              brand: {
+                50: '#f0f0ff',
+                100: '#e0e0ff',
+                200: '#c4b5fd',
+                300: '#a78bfa',
+                400: '#8b5cf6',
+                500: '#7c3aed',
+                600: '#6d28d9',
+                700: '#5b21b6',
+                800: '#4c1d95',
+                900: '#2e1065',
+              }
+            },
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+              'float-delayed': 'float 6s ease-in-out 3s infinite',
+              'glow': 'glow 2s ease-in-out infinite alternate',
+              'slide-up': 'slideUp 0.5s ease-out',
+              'slide-down': 'slideDown 0.3s ease-out',
+              'fade-in': 'fadeIn 0.5s ease-out',
+              'scale-in': 'scaleIn 0.3s ease-out',
+              'shimmer': 'shimmer 2s infinite linear',
+              'pulse-slow': 'pulse 3s ease-in-out infinite',
+              'gradient': 'gradient 8s ease infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-20px)' },
+              },
+              glow: {
+                '0%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)' },
+                '100%': { boxShadow: '0 0 40px rgba(139, 92, 246, 0.6)' },
+              },
+              slideUp: {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
+              slideDown: {
+                '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              scaleIn: {
+                '0%': { transform: 'scale(0.95)', opacity: '0' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              },
+              gradient: {
+                '0%, 100%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' },
+              },
+            },
+          },
+        },
+      }
+    </script>
     
     <style type="text/tailwindcss">
         * {
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
         
+        body {
+            @apply bg-slate-950 text-white;
+        }
+
+        /* Custom Scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
+            height: 6px;
         }
-        
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 3px;
         }
-        
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+            background: rgba(139, 92, 246, 0.4);
+            border-radius: 3px;
         }
-        
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: rgba(139, 92, 246, 0.6);
         }
 
-        .primary-gradient {
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        /* Glass Effects */
+        .glass {
+            @apply bg-white/5 backdrop-blur-xl border border-white/10;
+        }
+        .glass-strong {
+            @apply bg-white/10 backdrop-blur-2xl border border-white/15;
+        }
+        .glass-card {
+            @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
         }
 
-        .smooth-transition {
-            transition: all 0.3s ease;
+        /* Gradient Text */
+        .gradient-text {
+            @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400;
+            background-size: 200% auto;
+            animation: gradient 8s ease infinite;
+        }
+        .gradient-text-static {
+            @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400;
         }
 
+        /* Premium Button */
+        .btn-primary {
+            @apply bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 hover:-translate-y-0.5 active:translate-y-0;
+        }
+        .btn-secondary {
+            @apply bg-white/10 hover:bg-white/15 text-white font-semibold py-3 px-6 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300;
+        }
+        .btn-ghost {
+            @apply text-slate-400 hover:text-white hover:bg-white/5 font-medium py-2 px-4 rounded-lg transition-all duration-200;
+        }
+
+        /* Card Hover Effects */
         .card-hover {
-            @apply hover:shadow-lg hover:scale-105 smooth-transition;
+            @apply transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 hover:-translate-y-1 hover:border-purple-500/30;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        /* Input Styling */
+        .input-dark {
+            @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300;
         }
 
-        .animate-slide-in {
-            animation: slideIn 0.3s ease;
+        /* Glow Effects */
+        .glow-purple {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.15), 0 0 60px rgba(139, 92, 246, 0.05);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.15), 0 0 60px rgba(34, 211, 238, 0.05);
         }
 
+        /* Toast Styles */
         .toast {
-            @apply fixed top-6 right-6 px-4 py-3 rounded-lg shadow-lg text-white animate-slide-in;
+            @apply fixed top-6 right-6 px-5 py-3.5 rounded-xl shadow-2xl text-white animate-slide-up backdrop-blur-xl;
             z-index: 9999;
         }
-
         .toast-success {
-            @apply bg-green-500;
+            @apply bg-emerald-500/90 border border-emerald-400/30;
         }
-
         .toast-error {
-            @apply bg-red-500;
+            @apply bg-red-500/90 border border-red-400/30;
+        }
+        .toast-info {
+            @apply bg-purple-500/90 border border-purple-400/30;
         }
 
-        .toast-info {
-            @apply bg-indigo-500;
+        /* Skeleton Loading */
+        .skeleton {
+            @apply bg-gradient-to-r from-white/5 via-white/10 to-white/5 rounded-lg animate-shimmer;
+            background-size: 200% 100%;
         }
+
+        /* Smooth Transition */
+        .smooth-transition {
+            @apply transition-all duration-300 ease-out;
+        }
+
+        /* Gradient Border */
+        .gradient-border {
+            position: relative;
+        }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(34, 211, 238, 0.5));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        /* Category Badge Colors */
+        .badge-tech { @apply bg-blue-500/20 text-blue-300 border border-blue-500/20; }
+        .badge-music { @apply bg-pink-500/20 text-pink-300 border border-pink-500/20; }
+        .badge-language { @apply bg-green-500/20 text-green-300 border border-green-500/20; }
+        .badge-art { @apply bg-orange-500/20 text-orange-300 border border-orange-500/20; }
+        .badge-cooking { @apply bg-red-500/20 text-red-300 border border-red-500/20; }
+        .badge-fitness { @apply bg-emerald-500/20 text-emerald-300 border border-emerald-500/20; }
+        .badge-business { @apply bg-yellow-500/20 text-yellow-300 border border-yellow-500/20; }
+        .badge-other { @apply bg-purple-500/20 text-purple-300 border border-purple-500/20; }
     </style>
+  <script type="module" crossorigin src="/assets/index-7e01134b.js"></script>
 </head>
-<body class="bg-white text-slate-900">
+<body class="bg-slate-950 text-white antialiased">
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

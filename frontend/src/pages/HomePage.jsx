@@ -18,6 +18,7 @@ const HomePage = () => {
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  
   const categories = ['Technology', 'Music', 'Language', 'Art', 'Cooking', 'Fitness', 'Business', 'Other'];
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const HomePage = () => {
       if (trendingRes.data.success) setTrending(trendingRes.data.trending);
     } catch (error) {
       console.error('Error loading data:', error);
-      setToast({ type: 'error', message: 'Failed to load data' });
+      setToast({ type: 'error', message: 'Failed to load dashboard data' });
     } finally {
       setLoading(false);
     }
@@ -79,88 +80,129 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+      {/* Background ambient glows */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-10 w-96 h-96 bg-purple-600/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-[500px] h-[500px] bg-cyan-600/5 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:48px_48px]"></div>
+      </div>
+
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        {/* Welcome Banner */}
+        <div className="mb-10 text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+            Exchange Skills, <span className="gradient-text">Grow Together.</span>
+          </h1>
+          <p className="text-slate-400 mt-2.5 text-base md:text-lg max-w-2xl leading-relaxed">
+            Welcome back, <span className="text-purple-300 font-bold">{user?.name || 'Explorer'}</span>! Connect with partners, review matches, and manage your courses.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar */}
           <div className="lg:col-span-1">
-            {/* User Profile Card */}
-            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-6 border border-indigo-100 sticky top-20">
-              <div className="text-center mb-4">
-                <div className="w-20 h-20 rounded-full primary-gradient flex items-center justify-center text-white font-bold text-2xl mx-auto mb-3">
+            <div className="glass-card p-6 border-white/5 sticky top-24 glow-purple">
+              {/* Avatar Section */}
+              <div className="text-center mb-6">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-3xl mx-auto mb-4 shadow-xl shadow-purple-500/20">
                   {user?.name?.[0]?.toUpperCase()}
                 </div>
-                <h3 className="font-bold text-lg text-slate-900">{user?.name}</h3>
-                <p className="text-sm text-slate-600">{user?.location}</p>
+                <h3 className="font-extrabold text-lg text-white leading-snug">{user?.name}</h3>
+                <p className="text-xs text-slate-400 mt-1 flex items-center justify-center gap-1">
+                  <span>📍</span> {user?.location || 'Global Citizen'}
+                </p>
               </div>
 
-              <p className="text-xs text-slate-700 text-center mb-4 line-clamp-2">{user?.bio}</p>
+              {/* Bio */}
+              {user?.bio && (
+                <p className="text-xs text-slate-400 text-center mb-6 leading-relaxed bg-white/5 p-3 rounded-xl border border-white/5 italic">
+                  "{user.bio}"
+                </p>
+              )}
 
-              <div className="flex gap-2 mb-4">
-                <div className="flex-1 text-center">
-                  <p className="text-lg font-bold text-indigo-600">{user?.trustScore || 0}</p>
-                  <p className="text-xs text-slate-600">Trust Score</p>
+              {/* User Stats Grid */}
+              <div className="grid grid-cols-3 gap-2 text-center bg-white/5 p-3 rounded-xl border border-white/5 mb-6">
+                <div>
+                  <p className="text-base font-black text-cyan-400">{user?.trustScore || 0}%</p>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Trust</p>
                 </div>
-                <div className="flex-1 text-center border-l border-indigo-200">
-                  <p className="text-lg font-bold text-indigo-600">{user?.skillsTeach?.length || 0}</p>
-                  <p className="text-xs text-slate-600">Teaching</p>
+                <div className="border-l border-white/10">
+                  <p className="text-base font-black text-purple-400">{user?.skillsTeach?.length || 0}</p>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Teach</p>
                 </div>
-                <div className="flex-1 text-center border-l border-indigo-200">
-                  <p className="text-lg font-bold text-indigo-600">{user?.skillsLearn?.length || 0}</p>
-                  <p className="text-xs text-slate-600">Learning</p>
+                <div className="border-l border-white/10">
+                  <p className="text-base font-black text-pink-400">{user?.skillsLearn?.length || 0}</p>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Learn</p>
                 </div>
               </div>
 
+              {/* Action */}
               <button
                 onClick={() => navigate('/profile?edit=true')}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-colors"
+                className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-3 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-200"
               >
-                Edit Profile
+                ⚙️ Edit Profile
               </button>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3 space-y-8">
-            {/* Search Section */}
-            <div>
-              <div className="relative mb-4">
+          {/* Main Content Area */}
+          <div className="lg:col-span-3 space-y-10">
+            {/* Search and Category section */}
+            <div className="glass-card p-6 border-white/5 glow-cyan">
+              <div className="relative mb-5">
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
                 <input
                   type="text"
-                  placeholder="Search for skills, people, or courses..."
+                  placeholder="What skill do you want to learn or teach today?"
                   value={searchQuery}
                   onChange={(e) => handleSearchInput(e.target.value)}
                   onKeyPress={handleSearch}
-                  className="w-full px-6 py-4 rounded-xl border-2 border-slate-300 focus:outline-none focus:border-indigo-500 text-lg"
+                  className="w-full pl-12 pr-6 py-4 bg-slate-900 border-2 border-white/5 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 text-base md:text-lg transition-all duration-300 shadow-inner"
                 />
+                
+                {/* Suggestions Dropdown */}
                 {searchSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-300 rounded-xl shadow-lg z-10">
-                    {searchSuggestions.map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setSearchQuery(suggestion.name);
-                          navigate(`/search?q=${encodeURIComponent(suggestion.name)}`);
-                        }}
-                        className="w-full text-left px-6 py-3 hover:bg-indigo-50 border-b border-slate-200 last:border-b-0"
-                      >
-                        <p className="font-semibold text-slate-900">{suggestion.name}</p>
-                        <p className="text-xs text-slate-600">{suggestion.category}</p>
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div className="fixed inset-0 z-20" onClick={() => setSearchSuggestions([])}></div>
+                    <div className="absolute top-full left-0 right-0 mt-3 glass border border-white/10 rounded-2xl shadow-2xl z-30 overflow-hidden animate-slide-down">
+                      {searchSuggestions.map((suggestion, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setSearchQuery(suggestion.name);
+                            setSearchSuggestions([]);
+                            navigate(`/search?q=${encodeURIComponent(suggestion.name)}`);
+                          }}
+                          className="w-full text-left px-6 py-4 hover:bg-white/10 border-b border-white/5 last:border-b-0 transition-colors flex justify-between items-center"
+                        >
+                          <div>
+                            <p className="font-extrabold text-white text-sm">{suggestion.name}</p>
+                            <p className="text-[10px] text-slate-400 mt-0.5">Category: {suggestion.category}</p>
+                          </div>
+                          <span className="text-xs text-purple-400 font-bold">Search →</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
 
-              {/* Category Filters */}
-              <div className="flex gap-2 flex-wrap">
+              {/* Quick Pills */}
+              <div className="flex gap-2 flex-wrap items-center">
+                <span className="text-xs text-slate-400 font-bold mr-2 uppercase tracking-wide">Category Quick Access:</span>
                 {categories.map(cat => (
                   <button
                     key={cat}
                     onClick={() => handleCategoryFilter(cat)}
-                    className="px-4 py-2 bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-700 rounded-full text-sm font-medium transition-colors"
+                    className="px-3.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 text-slate-300 hover:text-white rounded-full text-xs font-semibold transition-all duration-200"
                   >
                     {cat}
                   </button>
@@ -169,19 +211,26 @@ const HomePage = () => {
             </div>
 
             {loading ? (
-              <div className="text-center py-16">
-                <div className="inline-block">
-                  <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+              /* Loading Skeletons */
+              <div className="space-y-8">
+                <div className="glass-card p-6 border-white/5 space-y-4">
+                  <div className="h-6 w-48 bg-white/5 skeleton rounded-lg"></div>
+                  <div className="flex gap-4 overflow-hidden">
+                    <div className="w-64 h-48 bg-white/5 skeleton flex-shrink-0"></div>
+                    <div className="w-64 h-48 bg-white/5 skeleton flex-shrink-0"></div>
+                  </div>
                 </div>
               </div>
             ) : (
               <>
                 {/* Matching Profiles */}
                 {matches.length > 0 && (
-                  <section>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-4">People who match your skills</h2>
+                  <section className="glass-card p-6 border-white/5 glow-purple">
+                    <h2 className="text-xl font-extrabold text-white mb-5 flex items-center gap-2">
+                      <span>⚡</span> Perfect Matchups For You
+                    </h2>
                     <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
-                      {matches.slice(0, 5).map(match => (
+                      {matches.map(match => (
                         <MatchCard
                           key={match.user._id}
                           match={match}
@@ -193,26 +242,28 @@ const HomePage = () => {
                   </section>
                 )}
 
-                {/* Your Courses */}
-                <section>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold text-slate-900">Your Services</h2>
+                {/* Your Services/Courses */}
+                <section className="glass-card p-6 border-white/5">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+                      <span>🏫</span> Your Registered Teaching Services
+                    </h2>
                     <button
                       onClick={() => navigate('/provide-service')}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                      className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md"
                     >
-                      + Register New
+                      + Register Service
                     </button>
                   </div>
 
                   {courses.length === 0 ? (
-                    <div className="text-center bg-slate-50 rounded-2xl py-12">
-                      <p className="text-slate-600 mb-4">You haven't registered any courses yet</p>
+                    <div className="text-center py-10 bg-slate-900/50 rounded-2xl border border-white/5">
+                      <p className="text-slate-400 text-sm mb-4">You have not registered any skills you teach yet.</p>
                       <button
                         onClick={() => navigate('/provide-service')}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                        className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-5 py-2.5 rounded-xl text-xs font-bold transition-all"
                       >
-                        Register Your First Course
+                        Register a Teaching Service
                       </button>
                     </div>
                   ) : (
@@ -228,30 +279,34 @@ const HomePage = () => {
                   )}
                 </section>
 
-                {/* Trending Skills */}
+                {/* Trending Skills Categories */}
                 {trending.length > 0 && (
-                  <section>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Trending skills to learn</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <section className="glass-card p-6 border-white/5">
+                    <h2 className="text-xl font-extrabold text-white mb-6 flex items-center gap-2">
+                      <span>🔥</span> Trending Skill Exchanges
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {trending.map(skill => (
                         <div
                           key={skill.category}
-                          className="bg-slate-50 rounded-xl p-6 card-hover border border-slate-200"
+                          className="glass-card p-5 border-white/5 card-hover flex flex-col justify-between"
                         >
-                          <div className="flex items-start justify-between mb-3">
-                            <h3 className="font-bold text-lg text-slate-900">{skill.category}</h3>
-                            <span className="text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-semibold">
-                              {skill.courseCount} courses
-                            </span>
+                          <div>
+                            <div className="flex items-start justify-between gap-2 mb-3">
+                              <h3 className="font-extrabold text-white text-sm">{skill.category}</h3>
+                              <span className="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded-full font-bold">
+                                {skill.courseCount} course{skill.courseCount !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                              {skill.topCourse?.overview || `Explore popular ${skill.category.toLowerCase()} workshops.`}
+                            </p>
                           </div>
-                          <p className="text-sm text-slate-600 mb-4 line-clamp-2">
-                            {skill.topCourse?.overview}
-                          </p>
                           <button
                             onClick={() => handleTrendingFind(skill.category)}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg text-sm font-semibold transition-colors"
+                            className="w-full bg-white/5 hover:bg-purple-500/20 text-white hover:text-purple-300 py-2 rounded-xl text-xs font-bold border border-white/10 hover:border-purple-500/20 transition-all duration-200"
                           >
-                            Find Teachers
+                            Explore Teachers
                           </button>
                         </div>
                       ))}
@@ -264,17 +319,9 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Chat Box */}
       <ChatBox />
 
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 };
