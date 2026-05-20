@@ -19,10 +19,32 @@ const searchRoutes = require('./routes/search');
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  'https://getskill-phi.vercel.app',
+  'https://getskill-rsriman0008-3321s-projects.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+const corsOriginCheck = function (origin, callback) {
+  if (!origin) return callback(null, true);
+  
+  const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                    origin.endsWith('vercel.app') || 
+                    origin.includes('localhost');
+                    
+  if (isAllowed) {
+    callback(null, true);
+  } else {
+    console.log(`CORS blocked for origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 // Initialize Socket.io
 const io = socketIo(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: corsOriginCheck,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -36,7 +58,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: corsOriginCheck,
   credentials: true
 }));
 
