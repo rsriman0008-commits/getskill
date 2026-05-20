@@ -67,8 +67,17 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/skillswap
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-  .then(() => console.log('✅ MongoDB connected successfully'))
+  .then(() => {
+    console.log('✅ MongoDB connected successfully');
+    // Run database seeder on startup
+    authRoutes.seedDummyData().catch(err => console.error('❌ Startup seeding failed:', err));
+  })
   .catch(err => console.error('❌ MongoDB connection error:', err));
+
+// Welcoming root endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({ success: true, message: "Welcome to GetSkills API Server", status: "online" });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

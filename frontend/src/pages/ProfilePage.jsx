@@ -81,6 +81,10 @@ const ProfilePage = ({ isEditMode = false }) => {
     try {
       setLoading(true);
       if (isOwnProfile) {
+        if (!user) {
+          navigate('/auth');
+          return;
+        }
         const res = await userAPI.getMe();
         if (res.data.success) {
           setProfile(res.data.user);
@@ -99,6 +103,9 @@ const ProfilePage = ({ isEditMode = false }) => {
     } catch (error) {
       console.error('Error loading profile:', error);
       setToast({ type: 'error', message: 'Failed to load profile details' });
+      if (error.response?.status === 401) {
+        navigate('/auth');
+      }
     } finally {
       setLoading(false);
     }

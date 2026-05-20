@@ -48,19 +48,49 @@ function App() {
     );
   }
 
-  // Public access - always show main app routes
+  // Authenticated access - protect routes
   return (
     <Routes>
       {/* Auth Route */}
       <Route path="/auth" element={<AuthPage />} />
-      {/* Main Application Routes */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/profile/edit" element={<ProfilePage isEditMode={true} />} />
-      <Route path="/profile/:id" element={<ProfilePage />} />
-      <Route path="/provide-service" element={<ProvideServicePage />} />
-      <Route path="/search" element={<SearchPage />} />
-      <Route path="/onboarding" element={<OnboardingPage />} />
+      
+      {/* Main Application Routes (Require Authentication and Onboarding) */}
+      <Route path="/" element={
+        <ProtectedRoute isOnboarded={true}>
+          <HomePage />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute isOnboarded={true}>
+          <ProfilePage />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile/edit" element={
+        <ProtectedRoute isOnboarded={true}>
+          <ProfilePage isEditMode={true} />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile/:id" element={
+        <ProtectedRoute isOnboarded={true}>
+          <ProfilePage />
+        </ProtectedRoute>
+      } />
+      <Route path="/provide-service" element={
+        <ProtectedRoute isOnboarded={true}>
+          <ProvideServicePage />
+        </ProtectedRoute>
+      } />
+      <Route path="/search" element={
+        <ProtectedRoute isOnboarded={true}>
+          <SearchPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/onboarding" element={
+        <ProtectedRoute isOnboarded={false}>
+          <OnboardingPage />
+        </ProtectedRoute>
+      } />
+
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

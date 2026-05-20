@@ -52,7 +52,9 @@ export const authAPI = {
   register: (name, email, password, confirmPassword) =>
     api.post('/auth/register', { name, email, password, confirmPassword }),
   login: (email, password) =>
-    api.post('/auth/login', { email, password })
+    api.post('/auth/login', { email, password }),
+  firebaseLogin: (idToken, name, email) =>
+    api.post('/auth/firebase-login', { idToken, name, email })
 };
 
 // User endpoints

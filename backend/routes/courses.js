@@ -47,12 +47,12 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
     await newCourse.save();
-    await newCourse.populate('teacher', 'name email -passwordHash');
+    const populatedCourse = await Course.findById(newCourse._id).populate('teacher', 'name email location -passwordHash');
 
     res.status(201).json({
       success: true,
       message: 'Course created successfully',
-      course: newCourse
+      course: populatedCourse
     });
   } catch (error) {
     console.error('Error creating course:', error);

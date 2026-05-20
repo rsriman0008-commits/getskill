@@ -1,6 +1,14 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { setAuthToken, authAPI } from '../utils/api';
 import axios from 'axios';
+import {
+  auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  signInWithPopup,
+  GoogleAuthProvider
+} from '../utils/firebase';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -12,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isOnboarded, setIsOnboarded] = useState(false);
 
-  // Initialize from localStorage on mount or auto-login
+  // Initialize from localStorage on mount
   useEffect(() => {
     const initializeAuth = async () => {
       const storedToken = localStorage.getItem('token');
@@ -25,7 +33,7 @@ export const AuthProvider = ({ children }) => {
         setIsOnboarded(storedOnboarded === 'true');
         setAuthToken(storedToken);
       } else {
-        // Auto-login with demo user for public access
+        // Auto-login with demo user for public access if no session is set
         try {
           const response = await axios.get(`${API_BASE_URL}/auth/auto-login`);
           if (response.data.success) {
@@ -51,7 +59,20 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, confirmPassword) => {
     try {
       setLoading(true);
-      const response = await authAPI.register(name, email, password, confirmPassword);
+
+      if (password !== confirmPassword) {
+        return { success: false, error: 'Passwords do not match' };
+      }
+
+      // 1. Create account on Firebase
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+
+      // 2. Fetch Firebase ID Token
+      const idToken = await firebaseUser.getIdToken();
+
+      // 3. Sync profile metadata with backend
+      const response = await authAPI.firebaseLogin(idToken, name, firebaseUser.email);
 
       if (response.data.success) {
         setToken(response.data.token);
@@ -64,9 +85,10 @@ export const AuthProvider = ({ children }) => {
         return { success: true };
       }
     } catch (error) {
+      console.error('Firebase Auth Register Error:', error);
       return {
         success: false,
-        error: error.response?.data?.error || 'Registration failed'
+        error: error.message || error.response?.data?.error || 'Registration failed'
       };
     } finally {
       setLoading(false);
@@ -76,7 +98,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      const response = await authAPI.login(email, password);
+
+      // 1. Sign in via Firebase client
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+
+      // 2. Retrieve verified ID Token
+      const idToken = await firebaseUser.getIdToken();
+
+      // 3. Exchange ID Token for App JWT
+      const response = await authAPI.firebaseLogin(idToken, firebaseUser.displayName, firebaseUser.email);
 
       if (response.data.success) {
         setToken(response.data.token);
@@ -89,16 +120,56 @@ export const AuthProvider = ({ children }) => {
         return { success: true, isOnboarded: response.data.isOnboarded };
       }
     } catch (error) {
+      console.error('Firebase Auth Login Error:', error);
       return {
         success: false,
-        error: error.response?.data?.error || 'Login failed'
+        error: error.message || error.response?.data?.error || 'Login failed'
       };
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
+  const loginWithGoogle = async () => {
+    try {
+      setLoading(true);
+      const provider = new GoogleAuthProvider();
+      
+      // 1. Trigger Firebase Social Popup
+      const userCredential = await signInWithPopup(auth, provider);
+      const firebaseUser = userCredential.user;
+
+      // 2. Exchange token
+      const idToken = await firebaseUser.getIdToken();
+      const response = await authAPI.firebaseLogin(idToken, firebaseUser.displayName, firebaseUser.email);
+
+      if (response.data.success) {
+        setToken(response.data.token);
+        setUser(response.data.user);
+        setIsOnboarded(response.data.isOnboarded);
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('isOnboarded', response.data.isOnboarded.toString());
+        setAuthToken(response.data.token);
+        return { success: true, isOnboarded: response.data.isOnboarded };
+      }
+    } catch (error) {
+      console.error('Firebase Google Auth Error:', error);
+      return {
+        success: false,
+        error: error.message || error.response?.data?.error || 'Google Authentication failed'
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await firebaseSignOut(auth);
+    } catch (err) {
+      console.error('Firebase client logout error:', err);
+    }
     setUser(null);
     setToken(null);
     setIsOnboarded(false);
@@ -125,6 +196,7 @@ export const AuthProvider = ({ children }) => {
     isOnboarded,
     register,
     login,
+    loginWithGoogle,
     logout,
     updateUser,
     completeOnboarding,
